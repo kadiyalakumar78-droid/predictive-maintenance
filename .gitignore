@@ -1,0 +1,5 @@
+drive/
+*.gdoc
+.ipynb_checkpoints/
+__pycache__/
+.env
