@@ -2,25 +2,25 @@ name: Predictive Maintenance Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   ml_pipeline:
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout Repository
       - name: Checkout code
         uses: actions/checkout@v3
+
       # Step 2: Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       # Step 3: Install Dependencies
       - name: Install dependencies
@@ -31,16 +31,17 @@ jobs:
       # Step 4: Login to Hugging Face
       - name: Hugging Face Login
         env:
-          HF_TOKEN: ${{secrets.HF_TOKEN}}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli login --token $HF_TOKEN
+          pip install huggingface_hub
+          hf auth login --token $HF_TOKEN
 
       # Step 5: Data Preparation
       - name: Run data preparation
         run: |
           python src/data_preparation.py
 
-      # Step 6: Model Training & Tracking
+      # Step 6: Model Training & Experiment Tracking
       - name: Train model and log experiments
         run: |
           python src/train_model.py
@@ -48,9 +49,9 @@ jobs:
       # Step 7: Build Docker Image
       - name: Build Docker image
         run: |
-          docker build -t predictive-maintenance-app.py
+          docker build -t predictive-maintenance-app .
 
-      # Step 8: Deployment completed
+      # Step 8: Pipeline Completion
       - name: Deployment completed
         run: |
-          echo "Model training and deployment steps completed successfully"
+          echo "Predictive Maintenance pipeline executed successfully"
